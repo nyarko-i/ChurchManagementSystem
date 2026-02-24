@@ -11,24 +11,24 @@ export default async function DashboardLayout({
   if (!session) redirect("/login")
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
 
-      {/* Sidebar */}
+      {/* Sidebar — fixed, never scrolls */}
       <Sidebar />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      {/* Right Side */}
+      <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Top Bar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        {/* Top Bar — fixed, never scrolls */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shrink-0">
           <div />
           <div className="text-sm text-gray-600">
             Welcome, <span className="font-semibold">{session.user.name}</span>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-6">
+        {/* Page Content — ONLY this scrolls */}
+        <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>
 

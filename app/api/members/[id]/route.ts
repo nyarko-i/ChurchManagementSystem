@@ -4,14 +4,15 @@ import { NextResponse } from "next/server"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await auth()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const member = await prisma.member.findFirst({
     where: {
-      id: params.id,
+      id: id,
       churchId: session.user.churchId,
     },
   })

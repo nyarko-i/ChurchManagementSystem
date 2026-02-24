@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
 }
 
 // =============================
@@ -22,9 +21,19 @@ model Church {
   subscriptionStatus SubscriptionStatus @default(active)
   createdAt          DateTime           @default(now())
 
-  // Relations
-  users        User[]
-  members      Member[]
+  users                User[]
+  members              Member[]
+  titheRecords         TitheRecord[]
+  welfareSettings      WelfareSettings?
+  welfareContributions WelfareContribution[]
+  welfareRequests      WelfareRequest[]
+  welfarePayouts       WelfarePayout[]
+  contributionTypes    ContributionType[]
+  contributions        Contribution[]
+  offerings            Offering[]
+  expenses             Expense[]
+  auditLogs            AuditLog[]
+  smsLogs              SmsLog[]
 }
 
 // =============================
@@ -40,7 +49,6 @@ model User {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  // Relations
   church Church @relation(fields: [churchId], references: [id])
 }
 
@@ -63,12 +71,236 @@ model Member {
   status       MemberStatus @default(active)
   createdAt    DateTime     @default(now())
 
-  // Relations
-  church Church @relation(fields: [churchId], references: [id])
+  church               Church                @relation(fields: [churchId], references: [id])
+  titheRecords         TitheRecord[]
+  welfareContributions WelfareContribution[]
+  welfareRequests      WelfareRequest[]
+  contributions        Contribution[]
 
   @@unique([churchId, memberNumber])
   @@index([churchId])
   @@index([phone])
+}
+
+// =============================
+// TITHE
+// =============================
+model TitheRecord {
+  id            String        @id @default(uuid())
+  churchId      String
+  memberId      String
+  month         Int
+  year          Int
+  week1Amount   Float?
+  week2Amount   Float?
+  week3Amount   Float?
+  week4Amount   Float?
+  monthlyAmount Float?
+  paymentMethod PaymentMethod @default(cash)
+  isSigned      Boolean       @default(false)
+  signedBy      String?
+  signedAt      DateTime?
+  recordedBy    String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  church Church @relation(fields: [churchId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
+
+  @@unique([churchId, memberId, month, year])
+  @@index([churchId])
+  @@index([memberId])
+}
+
+// =============================
+// WELFARE SETTINGS
+// =============================
+model WelfareSettings {
+  id            String   @id @default(uuid())
+  churchId      String   @unique
+  amount        Float
+  effectiveYear Int
+  updatedBy     String
+  updatedAt     DateTime @updatedAt
+
+  church Church @relation(fields: [churchId], references: [id])
+}
+
+// =============================
+// WELFARE CONTRIBUTIONS
+// =============================
+model WelfareContribution {
+  id            String        @id @default(uuid())
+  churchId      String
+  memberId      String
+  amount        Float
+  month         Int
+  year          Int
+  paymentMethod PaymentMethod @default(cash)
+  status        PaymentStatus @default(unpaid)
+  recordedBy    String?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  church Church @relation(fields: [churchId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
+
+  @@unique([churchId, memberId, month, year])
+  @@index([churchId])
+  @@index([memberId])
+}
+
+// =============================
+// WELFARE REQUESTS
+// =============================
+model WelfareRequest {
+  id             String        @id @default(uuid())
+  churchId       String
+  memberId       String
+  type           WelfareType
+  description    String
+  status         RequestStatus @default(pending)
+  approvedBy     String?
+  approvedAmount Float?
+  approvedAt     DateTime?
+  createdAt      DateTime      @default(now())
+
+  church  Church         @relation(fields: [churchId], references: [id])
+  member  Member         @relation(fields: [memberId], references: [id])
+  payout  WelfarePayout?
+
+  @@index([churchId])
+}
+
+// =============================
+// WELFARE PAYOUTS
+// =============================
+model WelfarePayout {
+  id        String   @id @default(uuid())
+  churchId  String
+  requestId String   @unique
+  amount    Float
+  paidBy    String
+  paidAt    DateTime @default(now())
+
+  church  Church         @relation(fields: [churchId], references: [id])
+  request WelfareRequest @relation(fields: [requestId], references: [id])
+
+  @@index([churchId])
+}
+
+// =============================
+// CONTRIBUTION TYPES
+// =============================
+model ContributionType {
+  id          String   @id @default(uuid())
+  churchId    String
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  church        Church         @relation(fields: [churchId], references: [id])
+  contributions Contribution[]
+
+  @@index([churchId])
+}
+
+// =============================
+// CONTRIBUTIONS
+// =============================
+model Contribution {
+  id                 String        @id @default(uuid())
+  churchId           String
+  memberId           String
+  contributionTypeId String
+  amount             Float
+  paymentMethod      PaymentMethod @default(cash)
+  recordedBy         String
+  createdAt          DateTime      @default(now())
+
+  church           Church           @relation(fields: [churchId], references: [id])
+  member           Member           @relation(fields: [memberId], references: [id])
+  contributionType ContributionType @relation(fields: [contributionTypeId], references: [id])
+
+  @@index([churchId])
+  @@index([memberId])
+}
+
+// =============================
+// OFFERING
+// =============================
+model Offering {
+  id          String      @id @default(uuid())
+  churchId    String
+  serviceDate DateTime
+  serviceType ServiceType
+  cashAmount  Float       @default(0)
+  momoAmount  Float       @default(0)
+  totalAmount Float
+  notes       String?
+  recordedBy  String
+  createdAt   DateTime    @default(now())
+
+  church Church @relation(fields: [churchId], references: [id])
+
+  @@index([churchId])
+}
+
+// =============================
+// EXPENSES
+// =============================
+model Expense {
+  id          String   @id @default(uuid())
+  churchId    String
+  title       String
+  category    String
+  amount      Float
+  description String?
+  recordedBy  String
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  church Church @relation(fields: [churchId], references: [id])
+
+  @@index([churchId])
+}
+
+// =============================
+// AUDIT LOG
+// =============================
+model AuditLog {
+  id         String   @id @default(uuid())
+  churchId   String
+  userId     String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  church Church @relation(fields: [churchId], references: [id])
+
+  @@index([churchId])
+  @@index([userId])
+}
+
+// =============================
+// SMS LOG
+// =============================
+model SmsLog {
+  id             String   @id @default(uuid())
+  churchId       String
+  recipientPhone String
+  recipientName  String?
+  message        String
+  status         String
+  provider       String
+  sentAt         DateTime @default(now())
+
+  church Church @relation(fields: [churchId], references: [id])
+
+  @@index([churchId])
 }
 
 // =============================
@@ -101,4 +333,33 @@ enum MemberStatus {
   active
   inactive
   deceased
+}
+
+enum PaymentMethod {
+  cash
+  momo
+}
+
+enum PaymentStatus {
+  paid
+  unpaid
+}
+
+enum WelfareType {
+  bereavement_parent
+  bereavement_child
+  childbirth
+  marriage
+}
+
+enum RequestStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ServiceType {
+  sunday
+  midweek
+  special
 }

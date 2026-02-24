@@ -10,6 +10,7 @@ export async function addMember(formData: {
   phone: string
   email: string
   gender: string
+  dateOfBirth: string
   address: string
   occupation: string
 }) {
@@ -32,6 +33,7 @@ export async function addMember(formData: {
         phone: formData.phone || null,
         email: formData.email || null,
         gender: (formData.gender as any) || null,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : null,
         address: formData.address || null,
         occupation: formData.occupation || null,
       },
@@ -52,6 +54,7 @@ export async function updateMember(
     phone: string
     email: string
     gender: string
+    dateOfBirth: string
     address: string
     occupation: string
     status: string
@@ -72,6 +75,7 @@ export async function updateMember(
         phone: formData.phone || null,
         email: formData.email || null,
         gender: (formData.gender as any) || null,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : null,
         address: formData.address || null,
         occupation: formData.occupation || null,
         status: formData.status as any,

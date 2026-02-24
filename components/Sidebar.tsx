@@ -5,13 +5,15 @@ import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: "📊" },
-  { label: "Members", href: "/dashboard/members", icon: "👥" },
-  { label: "Giving", href: "/dashboard/giving", icon: "💰" },
-  { label: "Attendance", href: "/dashboard/attendance", icon: "📅" },
-  { label: "Welfare", href: "/dashboard/welfare", icon: "🏥" },
-  { label: "SMS", href: "/dashboard/sms", icon: "📩" },
-  { label: "Expenses", href: "/dashboard/expenses", icon: "📋" },
+  { label: "Dashboard",     href: "/dashboard",                icon: "📊" },
+  { label: "Members",       href: "/dashboard/members",        icon: "👥" },
+  { label: "Tithe",         href: "/dashboard/tithe",          icon: "📖" },
+  { label: "Welfare",       href: "/dashboard/welfare",        icon: "🏥" },
+  { label: "Contributions", href: "/dashboard/contributions",  icon: "💰" },
+  { label: "Offerings",     href: "/dashboard/offerings",      icon: "🙏" },
+  { label: "Expenses",      href: "/dashboard/expenses",       icon: "📋" },
+  { label: "Finance",       href: "/dashboard/finance",        icon: "📈" },
+  { label: "SMS",           href: "/dashboard/sms",            icon: "📩" },
 ]
 
 export default function Sidebar() {
