@@ -1,0 +1,104 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+// =============================
+// CHURCH (The Tenant)
+// =============================
+model Church {
+  id                 String             @id @default(uuid())
+  name               String
+  slug               String             @unique
+  email              String
+  phone              String
+  address            String?
+  subscriptionPlan   SubscriptionPlan   @default(starter)
+  subscriptionStatus SubscriptionStatus @default(active)
+  createdAt          DateTime           @default(now())
+
+  // Relations
+  users        User[]
+  members      Member[]
+}
+
+// =============================
+// USER (Church Staff)
+// =============================
+model User {
+  id           String   @id @default(uuid())
+  churchId     String
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(secretary)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  church Church @relation(fields: [churchId], references: [id])
+}
+
+// =============================
+// MEMBER
+// =============================
+model Member {
+  id           String       @id @default(uuid())
+  churchId     String
+  memberNumber String
+  firstName    String
+  lastName     String
+  phone        String?
+  email        String?
+  gender       Gender?
+  dateOfBirth  DateTime?
+  address      String?
+  occupation   String?
+  joinDate     DateTime     @default(now())
+  status       MemberStatus @default(active)
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  church Church @relation(fields: [churchId], references: [id])
+
+  @@unique([churchId, memberNumber])
+  @@index([churchId])
+  @@index([phone])
+}
+
+// =============================
+// ENUMS
+// =============================
+enum SubscriptionPlan {
+  starter
+  growth
+  pro
+}
+
+enum SubscriptionStatus {
+  active
+  suspended
+}
+
+enum UserRole {
+  super_admin
+  pastor
+  treasurer
+  secretary
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum MemberStatus {
+  active
+  inactive
+  deceased
+}
