@@ -130,17 +130,25 @@ model WelfareSettings {
 // WELFARE CONTRIBUTIONS
 // =============================
 model WelfareContribution {
-  id            String        @id @default(uuid())
-  churchId      String
-  memberId      String
-  amount        Float
-  month         Int
-  year          Int
-  paymentMethod PaymentMethod @default(cash)
-  status        PaymentStatus @default(unpaid)
-  recordedBy    String?
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
+  id             String        @id @default(uuid())
+  churchId       String
+  memberId       String
+  month          Int
+  year           Int
+  week1Amount    Float?
+  week2Amount    Float?
+  week3Amount    Float?
+  week4Amount    Float?
+  monthlyAmount  Float?
+  totalPaid      Float         @default(0)
+  requiredAmount Float
+  paymentMethod  PaymentMethod @default(cash)
+  isSigned       Boolean       @default(false)
+  signedBy       String?
+  signedAt       DateTime?
+  recordedBy     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   church Church @relation(fields: [churchId], references: [id])
   member Member @relation(fields: [memberId], references: [id])

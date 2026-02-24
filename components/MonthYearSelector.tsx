@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 const MONTHS = [
   "January", "February", "March", "April",
@@ -12,14 +11,16 @@ const MONTHS = [
 export default function MonthYearSelector({
   month,
   year,
+  basePath = "/dashboard/tithe",
 }: {
   month: number
   year: number
+  basePath?: string
 }) {
   const router = useRouter()
 
   function handleChange(newMonth: number, newYear: number) {
-    router.push(`/dashboard/tithe?month=${newMonth}&year=${newYear}`)
+    router.push(`${basePath}?month=${newMonth}&year=${newYear}`)
   }
 
   return (
