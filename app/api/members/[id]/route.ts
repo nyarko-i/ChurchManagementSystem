@@ -12,7 +12,7 @@ export async function GET(
 
   const member = await prisma.member.findFirst({
     where: {
-      id: id,
+      id,
       churchId: session.user.churchId,
     },
   })
