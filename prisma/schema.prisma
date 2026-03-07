@@ -76,6 +76,7 @@ model Member {
   welfareContributions WelfareContribution[]
   welfareRequests      WelfareRequest[]
   contributions        Contribution[]
+  smsLogs              SmsLog[]
 
   @@unique([churchId, memberNumber])
   @@index([churchId])
@@ -173,9 +174,9 @@ model WelfareRequest {
   approvedAt     DateTime?
   createdAt      DateTime      @default(now())
 
-  church  Church         @relation(fields: [churchId], references: [id])
-  member  Member         @relation(fields: [memberId], references: [id])
-  payout  WelfarePayout?
+  church Church         @relation(fields: [churchId], references: [id])
+  member Member         @relation(fields: [memberId], references: [id])
+  payout WelfarePayout?
 
   @@index([churchId])
 }
@@ -299,14 +300,17 @@ model AuditLog {
 model SmsLog {
   id             String   @id @default(uuid())
   churchId       String
+  memberId       String?
   recipientPhone String
   recipientName  String?
   message        String
+  type           String
   status         String
-  provider       String
+  provider       String   @default("arkesel")
   sentAt         DateTime @default(now())
 
-  church Church @relation(fields: [churchId], references: [id])
+  church Church  @relation(fields: [churchId], references: [id])
+  member Member? @relation(fields: [memberId], references: [id])
 
   @@index([churchId])
 }
