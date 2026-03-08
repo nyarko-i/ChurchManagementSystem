@@ -14,6 +14,8 @@ const navItems = [
   { label: "Expenses",      href: "/dashboard/expenses",       icon: "📋" },
   { label: "Finance",       href: "/dashboard/finance",        icon: "📈" },
   { label: "SMS",           href: "/dashboard/sms",            icon: "📩" },
+  { label: "Settings",      href: "/dashboard/settings",       icon: "⚙️" },
+  { label: "Reports",       href: "/dashboard/reports",        icon: "📄" },
 ]
 
 export default function Sidebar() {
