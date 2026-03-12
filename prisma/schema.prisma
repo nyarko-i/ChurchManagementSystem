@@ -37,6 +37,20 @@ model Church {
 }
 
 // =============================
+// SUPER ADMIN (SaaS Owner)
+// No churchId — belongs to no church
+// =============================
+model SuperAdmin {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+}
+
+// =============================
 // USER (Church Staff)
 // =============================
 model User {
@@ -330,7 +344,6 @@ enum SubscriptionStatus {
 }
 
 enum UserRole {
-  super_admin
   pastor
   treasurer
   secretary
