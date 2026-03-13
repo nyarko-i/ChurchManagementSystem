@@ -1,13 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { registerChurch } from "@/actions/register"
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [submitted, setSubmitted] = useState(false)
 
   const [form, setForm] = useState({
     churchName: "",
@@ -27,40 +26,61 @@ export default function RegisterPage() {
     setError("")
 
     const result = await registerChurch(form)
-
     setLoading(false)
 
     if (result.error) {
       setError(result.error)
     } else {
-      router.push("/login")
+      setSubmitted(true)
     }
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-10">
+        <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">✅</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Request Submitted!</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Thank you! Your church registration request has been received. Our team will review it and send your login credentials to <strong>{form.adminEmail}</strong> within 24 hours.
+          </p>
+          <a
+            href="/login"
+            className="text-blue-600 text-sm font-medium hover:underline"
+          >
+            ← Back to login
+          </a>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-10">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-lg">
 
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-blue-700">ChurchCore</h1>
           <p className="text-gray-500 mt-1">Register your church</p>
+          <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-xs text-blue-700">
+            📋 Your request will be reviewed and you&apos;ll receive login credentials by email within 24 hours.
+          </div>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
             {error}
           </div>
         )}
 
-        {/* Church Details */}
-        <p className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+        <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-widest">
           Church Details
         </p>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Church Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Church Name *</label>
           <input
             name="churchName"
             value={form.churchName}
@@ -71,7 +91,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Church Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Church Email *</label>
           <input
             name="churchEmail"
             value={form.churchEmail}
@@ -92,13 +112,12 @@ export default function RegisterPage() {
           />
         </div>
 
-        {/* Admin Details */}
-        <p className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-          Admin Account
+        <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-widest">
+          Your Details
         </p>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
           <input
             name="adminName"
             value={form.adminName}
@@ -108,8 +127,8 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Your Email *</label>
           <input
             name="adminEmail"
             value={form.adminEmail}
@@ -119,34 +138,18 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-          />
-        </div>
-
-        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={loading}
           className="w-full bg-blue-700 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition disabled:opacity-50"
         >
-          {loading ? "Creating your church..." : "Register Church"}
+          {loading ? "Submitting..." : "Submit Registration Request"}
         </button>
 
         <p className="text-center text-sm text-gray-500 mt-4">
           Already registered?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Sign in
-          </a>
+          <a href="/login" className="text-blue-600 hover:underline">Sign in</a>
         </p>
-
       </div>
     </div>
   )

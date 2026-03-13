@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { sendWelcomeEmail } from "@/actions/auth"
 
 async function requireSuperAdmin() {
   const session = await auth()
@@ -124,6 +125,14 @@ export async function addChurch(data: {
       churchId: church.id,
       isActive: true,
     },
+  })
+
+  // Send welcome email automatically
+  await sendWelcomeEmail({
+    churchName: data.churchName,
+    adminName: data.adminName,
+    email: data.adminEmail,
+    password: data.adminPassword,
   })
 
   revalidatePath("/admin")

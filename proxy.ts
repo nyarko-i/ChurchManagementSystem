@@ -27,12 +27,16 @@ export default auth(async (req) => {
   // ── LANDING PAGE ───────────────────────────────────────
   if (pathname === "/") return NextResponse.next()
 
-  // ── CHURCH ROUTES ──────────────────────────────────────
-  const isLoggedIn = !!req.auth
+  // ── PUBLIC AUTH PAGES ──────────────────────────────────
   const isLoginPage = pathname === "/login"
   const isRegisterPage = pathname === "/register"
+  const isForgotPassword = pathname === "/forgot-password"
+  const isResetPassword = pathname === "/reset-password"
 
-  if (!isLoggedIn && !isLoginPage && !isRegisterPage) {
+  // ── CHURCH ROUTES ──────────────────────────────────────
+  const isLoggedIn = !!req.auth
+
+  if (!isLoggedIn && !isLoginPage && !isRegisterPage && !isForgotPassword && !isResetPassword) {
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
@@ -46,5 +50,5 @@ export default auth(async (req) => {
 })
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth).*)"],
 }
